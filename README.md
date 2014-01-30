@@ -64,6 +64,7 @@ After server is restarted, refresh the browser to see html response:
 
 ````
 <h1> Hello World! </h1>
+````
 
 Also see [tests](https://github.com/unknownexception/connect-dispatcher/tree/master/test) and [examples](https://github.com/unknownexception/connect-dispatcher/tree/master/examples) and read source code.
 
@@ -79,4 +80,5 @@ app.use(dispatcher({
   cache : true, // by default it depends on NODE_ENV
 
 }))
+
 ````
