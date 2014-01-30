@@ -10,6 +10,8 @@ Why?
 2. 3-level caching. (controllers, views, persistEntirePage)
 4. Small size footprint, just single file dispatcher.js.
 
+
+
 ## Getting started
 
 First, install packages via npm:
@@ -62,3 +64,19 @@ After server is restarted, refresh the browser to see html response:
 
 ````
 <h1> Hello World! </h1>
+
+Also see [tests](https://github.com/unknownexception/connect-dispatcher/tree/master/test) and [examples](https://github.com/unknownexception/connect-dispatcher/tree/master/examples) and read source code.
+
+## Options
+
+Full config example:
+
+````
+app.use(dispatcher({
+  routes: { '/' : '/pages/home'}, 
+  controllersPath:  'application/controllers',
+  getControllerFile: function (name) { return name + '_controller.js';},
+  cache : true, // by default it depends on NODE_ENV
+
+}))
+````

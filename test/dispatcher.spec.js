@@ -46,9 +46,34 @@ describe('Dispatcher', function () {
         .get('/pages/twoway')
         .set('X-Requested-With', 'XMLHttpRequest')
         .end(function (err, res) {
-          console.log(res.text);
+
           var json = JSON.parse(res.text);
           expect(json).have.to.equal('pages_controller#twoway');
+          done(err);
+        });
+
+    });
+
+    it('should able to response with json when ?json=1 attached to uri', function (done) {
+
+      requestApp()
+        .get('/pages/twoway?json=1')
+        .end(function (err, res) {
+
+          var json = JSON.parse(res.text);
+          expect(json).have.to.equal('pages_controller#twoway');
+          done(err);
+        });
+
+    });
+
+    it('should execute __before filter before each request', function (done) {
+
+      requestApp()
+        .get('/auth/witherror')
+        .end(function (err, res) {
+
+          expect(res.statusCode).have.to.equal(302);
           done(err);
         });
 
@@ -58,6 +83,8 @@ describe('Dispatcher', function () {
 
 function requestApp() {
   var app = connect();
+  app.use(connect.query());
   app.use(dispatcher());
+
   return request(app);
 }
