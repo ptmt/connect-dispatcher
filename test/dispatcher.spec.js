@@ -54,7 +54,7 @@ describe('Dispatcher', function () {
 
     });
 
-    it('should able to response with json when ?json=1 attached to uri', function (done) {
+    it('should response with json when ?json=1 attached to uri', function (done) {
 
       requestApp()
         .get('/pages/twoway?json=1')
@@ -62,6 +62,30 @@ describe('Dispatcher', function () {
 
           var json = JSON.parse(res.text);
           expect(json).have.to.equal('pages_controller#twoway');
+          done(err);
+        });
+
+    });
+
+    it('should response with json when view is not exist', function (done) {
+
+      requestApp()
+        .get('/pages/no_view')
+        .end(function (err, res) {
+
+          var json = JSON.parse(res.text);
+          expect(json).have.to.equal('pages_controller#no_view');
+          done(err);
+        });
+
+    });
+
+    it('should response with 404 method call this.error404()', function (done) {
+
+      requestApp()
+        .get('/pages/error404')
+        .end(function (err, res) {
+          expect(res.status).have.to.equal(404);
           done(err);
         });
 
@@ -78,6 +102,8 @@ describe('Dispatcher', function () {
         });
 
     });
+
+
   });
 });
 

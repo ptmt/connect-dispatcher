@@ -6,11 +6,9 @@ Yet another Node.js Connect dispatcher module.
 Why?
 
 1. Conventions over configurations. No more large routes tables.
-2. No direct views operations in conrollers. You can process first response on the server-side, then render same view and data in the browser. DRY-princple, reduce codebase.
-2. 3-level caching. (controllers, views, persistEntirePage)
-4. Small size footprint, just single file dispatcher.js.
-
-
+2. Controller return data to views, explicit or implicit render it depends from context. You can process first response on the server-side, then render the same view in the browser.
+2. Cache controllers, views or persist in cache entire page. Currently cache stored in memory, but not a big deal move on to Redis.
+4. Small size footprint, just single file dispatcher.js
 
 ## Getting started
 
@@ -66,7 +64,7 @@ After server is restarted, refresh the browser to see html response:
 <h1> Hello World! </h1>
 ````
 
-Also see [tests](https://github.com/unknownexception/connect-dispatcher/tree/master/test) and [examples](https://github.com/unknownexception/connect-dispatcher/tree/master/examples) and read source code.
+For more information see [examples](https://github.com/unknownexception/connect-dispatcher/tree/master/examples) and [tests](https://github.com/unknownexception/connect-dispatcher/tree/master/test).
 
 ## Options
 
@@ -74,9 +72,11 @@ Full config example:
 
 ````
 app.use(dispatcher({
-  routes: { '/' : '/pages/home'}, 
+  routes: { '/' : '/pages/home'},
   controllersPath:  'application/controllers',
   getControllerFile: function (name) { return name + '_controller.js';},
+  viewsPath: 'application/views', // by default it depends on NODE_ENV (useful for grunt usemin)
+  getViewFile: function (controller, action) { return controller + '/' + action + '.jade';}
   cache : true, // by default it depends on NODE_ENV
 
 }))

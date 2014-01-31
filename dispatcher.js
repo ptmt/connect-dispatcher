@@ -15,12 +15,16 @@ module.exports = function (options) {
   app.opts = app.opts || {};
   app.routes = options.routes || {};
   app.opts.cache = process.env['NODE_ENV'] === 'production';
-  app.opts.controllersPath = options.controllersPath || './app/controllers/';
+  app.opts.controllersPath = options.controllersPath + '/' || './app/controllers/';
   app.opts.getControllerFile = options.getControllerFile || function (controllerName) {
     return controllerName + "_controller.js";
   };
-  app.opts.viewsPath = options.viewsPath ||
-    (process.env['NODE_ENV'] === 'production' ? './app/min_views' : './app/views');
+  app.opts.viewsPath = options.viewsPath + '/' ||
+    (process.env['NODE_ENV'] === 'production' ? './app/min_views/' : './app/views/');
+  app.opts.getViewFile = options.getViewFile || function (controllerName, actionName) {
+    return controllerName + '/' + actionName + ".jade";
+  };
+
 
   return function (req, res, next) {
 
@@ -62,7 +66,6 @@ function searchController(httpContext) {
   } else {
     var ctrlpath = app.opts.controllersPath + app.opts.getControllerFile(request.controller);
     if (fs.existsSync(ctrlpath)) {
-
       var controller = require(path.resolve(ctrlpath));
       if (controller && (request.action in controller) || '__missing_action' in controller) {
         app.cachedControllers[request.controller] = controller;
@@ -104,8 +107,8 @@ Function.prototype.render = function (httpContext) {
       } else {
         if (data.__text)
           return data.__text;
-        return compileJade(
-          app.opts.viewsPath + '/' + httpContext.request.controller + '/' + httpContext.request.action + ".jade")
+        return compileJade(httpContext,
+          app.opts.viewsPath + app.opts.getViewFile(httpContext.request.controller, httpContext.request.action))
         (data);
       }
     })();
@@ -130,6 +133,13 @@ Function.prototype.render = function (httpContext) {
       onActionComplete(data); // sync version of action
   }
 };
+
+function returnJson(httpContext, data) {
+  httpContext.res.writeHead(200, {
+    'Content-Type': 'application/json'
+  });
+  return JSON.stringify(data);
+}
 
 function fetchFlashMessages(httpContext) {
   if (httpContext.req.session && httpContext.req.session.flash) {
@@ -174,6 +184,11 @@ function prepareContext(req, res, next) {
   };
 }
 
+/*
+ * Parse raw req.url into object consist `controller`, `action` and `params`
+ * `withMissing` is argument for extract alias for __missing_controller from route table
+ */
+
 function parseRequest(url, withMissing) {
   var path = url.split('?')[0];
 
@@ -192,14 +207,19 @@ function parseRequest(url, withMissing) {
   return parsed_request;
 }
 
-/* 
+/*
  * Compile .jade file into javascript function
  * If caching is enabled it try extract if from cache
  */
-function compileJade(filename) {
+function compileJade(httpContext, filename) {
 
   if (app.opts.cache && app.cachedViews[filename])
     return app.cachedViews[filename];
+
+  if (!fs.existsSync(filename))
+    return function (data) {
+      return returnJson(httpContext, data);
+    };
 
   var prevDate = new Date();
   var options = {
@@ -210,7 +230,7 @@ function compileJade(filename) {
   };
 
   // Compile a function
-  var fn = jade.compile(require('fs').readFileSync(filename, 'utf8'), options);
+  var fn = jade.compile(fs.readFileSync(filename, 'utf8'), options);
   log.debug('compiled jade template: ', filename, " in ms: ", new Date() - prevDate);
 
   if (app.opts.cache)
