@@ -15,12 +15,14 @@ module.exports = function (options) {
   app.opts = app.opts || {};
   app.routes = options.routes || {};
   app.opts.cache = process.env['NODE_ENV'] === 'production';
-  app.opts.controllersPath = options.controllersPath + '/' || './app/controllers/';
+  app.opts.controllersPath = options.controllersPath || './app/controllers';
+  app.opts.controllersPath += '/';
   app.opts.getControllerFile = options.getControllerFile || function (controllerName) {
     return controllerName + "_controller.js";
   };
-  app.opts.viewsPath = options.viewsPath + '/' ||
-    (process.env['NODE_ENV'] === 'production' ? './app/min_views/' : './app/views/');
+  app.opts.viewsPath = options.viewsPath ||
+    (process.env['NODE_ENV'] === 'production' ? './app/min_views' : './app/views');
+  app.opts.viewsPath += '/';
   app.opts.getViewFile = options.getViewFile || function (controllerName, actionName) {
     return controllerName + '/' + actionName + ".jade";
   };
@@ -34,6 +36,11 @@ module.exports = function (options) {
     log.debug('parsed request', request);
     // search controller, it exists in cached dictionary, get from it and render
     controller = searchController(httpContext);
+
+    if (!controller && '__missing_controller' in app.routes) {
+      httpContext.request = request = parseRequest(httpContext.req.url, true);
+      controller = searchController(httpContext);
+    }
 
     if (controller) {
       if (controller.__before)
@@ -64,7 +71,9 @@ function searchController(httpContext) {
   if (request.controller in app.cachedControllers) { //request.action in app.cachedControllers[request.controller]
     return app.cachedControllers[request.controller];
   } else {
+
     var ctrlpath = app.opts.controllersPath + app.opts.getControllerFile(request.controller);
+
     if (fs.existsSync(ctrlpath)) {
       var controller = require(path.resolve(ctrlpath));
       if (controller && (request.action in controller) || '__missing_action' in controller) {
@@ -75,12 +84,8 @@ function searchController(httpContext) {
         return null;
       }
     } else {
-      if ('__missing_controller' in app.routes) {
-        httpContext.request = parseRequest(req.url, true);
-        getController(httpContext);
-      } else {
-        return null;
-      }
+
+      return null;
     }
   }
 }

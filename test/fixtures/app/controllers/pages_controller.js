@@ -13,3 +13,11 @@ module.exports.return404 = function () {
 module.exports.no_view = function () {
   return 'pages_controller#no_view';
 };
+
+module.exports.missing_controller = function () {
+  return this.asJson(this.request.params[0]);
+};
+
+module.exports.__missing_action = function () {
+  return '__missing_action';
+};
