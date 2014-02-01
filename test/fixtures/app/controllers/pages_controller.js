@@ -14,6 +14,10 @@ module.exports.no_view = function () {
   return 'pages_controller#no_view';
 };
 
+module.exports.no_view_and_async = function (render) {
+  render('pages_controller#no_view_and_async');
+};
+
 module.exports.missing_controller = function () {
   return this.asJson(this.request.params[0]);
 };

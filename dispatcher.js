@@ -35,7 +35,7 @@ module.exports = function (options) {
     if (httpContext.req.method != 'GET') request.action += '_' + httpContext.req.method.toString().toLowerCase();
     log.debug('parsed request', request);
     // search controller, it exists in cached dictionary, get from it and render
-    controller = searchController(httpContext);
+    var controller = searchController(httpContext);
 
     if (!controller && '__missing_controller' in app.routes) {
       httpContext.request = request = parseRequest(httpContext.req.url, true);

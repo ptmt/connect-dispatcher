@@ -70,6 +70,17 @@ describe('Dispatcher', function () {
         });
     });
 
+    it('should response with json when view is not exist and ?json=1 specified', function (done) {
+      requestApp()
+        .get('/pages/no_view_and_async?json=1')
+        .end(function (err, res) {
+
+          var json = JSON.parse(res.text);
+          expect(json).have.to.equal('pages_controller#no_view_and_async');
+          done(err);
+        });
+    });
+
     it('should response with 404 method call this.error404()', function (done) {
       requestApp()
         .get('/pages/return404')

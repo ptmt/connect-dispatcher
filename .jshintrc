@@ -1,0 +1,15 @@
+{  
+    "evil": true,
+    "regexdash": true, // ??
+    "jquery": true, // global $.
+    "browser": true,  // global window.      
+    "trailing": false, 
+    "sub": true, 
+    "indent": 2, 
+    "curly": false, 
+    "white": true, 
+    "multistr":false, 
+    "unused": true, 
+    "undef": true, 
+    "globals": { "require": false, "module": false, "console": false, "exports": false } 
+}
