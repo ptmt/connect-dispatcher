@@ -10,6 +10,8 @@ Why?
 2. Cache controllers, views or persist in cache entire page. Currently cache stored in memory, but not a big deal move on to Redis.
 4. Small size footprint, just single file dispatcher.js
 
+For more information see [examples](https://github.com/unknownexception/connect-dispatcher/tree/master/examples) and [tests](https://github.com/unknownexception/connect-dispatcher/tree/master/test).
+
 ## Getting started
 
 First, install packages via npm:
@@ -64,7 +66,7 @@ After server is restarted, refresh the browser to see html response:
 <h1> Hello World! </h1>
 ````
 
-For more information see [examples](https://github.com/unknownexception/connect-dispatcher/tree/master/examples) and [tests](https://github.com/unknownexception/connect-dispatcher/tree/master/test).
+
 
 ## Options
 
@@ -78,6 +80,7 @@ app.use(dispatcher({
   viewsPath: 'application/views', // by default it depends on NODE_ENV (useful for grunt usemin)
   getViewFile: function (controller, action) { return controller + '/' + action + '.jade';}
   cache : true, // by default it depends on NODE_ENV
+  renderHook: function (ctx) { console.log ('before render ' + ctx.request.controller + '/' + ctx.request.action)}
 
 }))
 

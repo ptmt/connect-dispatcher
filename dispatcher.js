@@ -14,9 +14,11 @@ module.exports = function (options) {
   options = options || {};
   app.opts = app.opts || {};
   app.routes = options.routes || {};
+  app.opts.renderHook = options.renderHook || null;
   app.opts.cache = process.env['NODE_ENV'].toLowerCase() === 'production';
   app.opts.controllersPath = options.controllersPath || './app/controllers';
   app.opts.controllersPath += '/';
+
   app.opts.getControllerFile = options.getControllerFile || function (controllerName) {
     return controllerName + "_controller.js";
   };
@@ -125,6 +127,8 @@ Function.prototype.render = function (httpContext) {
   };
 
   var cacheKey = httpContext.req.url;
+  if (app.opts.renderHook)
+    app.opts.renderHook(httpContext);
   // TODO: NO CACHE FOR POST/PUT AND IF FLUSH MESSAGES EXIST
   if (app.opts.cache && cacheKey in app.persistCache) {
     httpContext.res.end(app.persistCache[cacheKey]);
@@ -236,7 +240,7 @@ function compileJade(httpContext, filename) {
 
   // Compile a function
   var fn = jade.compile(fs.readFileSync(filename, 'utf8'), options);
-  log.debug('compiled jade template: ', filename, " in ms: ", new Date() - prevDate);
+  console.log('compiled jade template: ', filename, " in ms: ", new Date() - prevDate);
 
   if (app.opts.cache)
     app.cachedViews[filename] = fn;
