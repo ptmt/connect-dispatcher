@@ -15,7 +15,7 @@ module.exports = function (options) {
   app.opts = app.opts || {};
   app.routes = options.routes || {};
   app.opts.renderHook = options.renderHook || null;
-  app.opts.cache = process.env['NODE_ENV'].toLowerCase() === 'production';
+  app.opts.cache = options.cache || process.env['NODE_ENV'] === 'production';
   app.opts.controllersPath = options.controllersPath || './app/controllers';
   app.opts.controllersPath += '/';
 

@@ -36,6 +36,18 @@ describe('Dispatcher', function () {
         });
     });
 
+    it('should response with 404 if aciton in controlller without __missing_action does not exist', function (done) {
+      requestApp()
+        .get('/auth/some_of_unexist_page')
+        .end(function (err, res) {
+          console.log(res.text);
+          expect(res.status).have.to.equal(404);
+          expect(res.text).have.to.equal('Not Found');
+          done(err);
+        });
+    });
+
+
     it('should able to response with json when xhr request', function (done) {
       requestApp()
         .get('/pages/twoway')
