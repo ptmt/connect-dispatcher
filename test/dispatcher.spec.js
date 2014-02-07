@@ -38,7 +38,7 @@ describe('Dispatcher', function () {
 
     it('should response with 404 if aciton in controlller without __missing_action does not exist', function (done) {
       requestApp()
-        .get('/auth/some_of_unexist_page')
+        .post('/auth/some_of_unexist_page')
         .end(function (err, res) {
           console.log(res.text);
           expect(res.status).have.to.equal(404);
@@ -74,6 +74,16 @@ describe('Dispatcher', function () {
     it('should response with json when view is not exist', function (done) {
       requestApp()
         .get('/pages/no_view')
+        .end(function (err, res) {
+          var json = JSON.parse(res.text);
+          expect(json).have.to.equal('pages_controller#no_view');
+          done(err);
+        });
+    });
+
+    it('should response with json when method is POST and view is not exist', function (done) {
+      requestApp()
+        .post('/pages/no_view')
         .end(function (err, res) {
 
           var json = JSON.parse(res.text);

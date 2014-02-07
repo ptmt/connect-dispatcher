@@ -10,7 +10,7 @@ module.exports.return404 = function () {
   return this.error404();
 };
 
-module.exports.no_view = function () {
+module.exports.no_view = module.exports.no_view_post = function () {
   return 'pages_controller#no_view';
 };
 
