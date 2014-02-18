@@ -19,9 +19,8 @@ First, install packages via npm:
 ```JavaScript
 npm install connect-dispatcher
 ```
-(also `npm install connect` if needed).
 
-Second, create new file called `app.js`:
+Second, create new file `app.js`:
 
 ```JavaScript
 var app = require('connect')(),
@@ -32,7 +31,7 @@ app.use(dispatcher());
 app.listen(3001);
 ```
 
-By default the connect-dispatcher trying to look for controller with the name `app/controllers/pages_controller.js` where looking public method `index`. To avoid 404 error we need as simple controller as this `pages_controller.js`:
+By default the connect-dispatcher trying to look for controller with the name `app/controllers/pages_controller.js` whithing exported method `index`. So to avoid 404 error we need as simple controller as this `pages_controller.js`:
 
 ```JavaScript
 var pages = module.exports;
@@ -67,12 +66,11 @@ After server is restarted, refresh the browser to see html response:
 ```
 
 
-
 ## Options
 
 Full config example:
 
-````
+```JavaScript
 app.use(dispatcher({
   routes: { '/' : '/pages/home'},
   controllersPath:  'application/controllers',
@@ -83,5 +81,4 @@ app.use(dispatcher({
   renderHook: function (ctx) { console.log ('before render ' + ctx.request.controller + '/' + ctx.request.action)}
 
 }))
-
-````
+```
