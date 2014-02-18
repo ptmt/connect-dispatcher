@@ -16,35 +16,35 @@ For more information see [examples](https://github.com/unknownexception/connect-
 
 First, install packages via npm:
 
-````
+```JavaScript
 npm install connect-dispatcher
-````
+```
 (also `npm install connect` if needed).
 
 Second, create new file called `app.js`:
 
-````
+```JavaScript
 var app = require('connect')(),
   dispatcher = require('connect-dispatcher');
 
 app.use(dispatcher());
 
 app.listen(3001);
-````
+```
 
 By default the connect-dispatcher trying to look for controller with the name `app/controllers/pages_controller.js` where looking public method `index`. To avoid 404 error we need as simple controller as this `pages_controller.js`:
 
-````
+```JavaScript
 var pages = module.exports;
 
 pages.index = function () {
   return this.asText('Hello World!');
 };
-````
+```
 
 It produces simple response to the browser, without view rendering. To enable this, change code to:
 
-````
+```JavaScript
 var pages = module.exports;
 
 pages.index = function () {
@@ -52,19 +52,19 @@ pages.index = function () {
     title:'Hello World!'
   };
 };
-````
+```
 
 and add jade template. By default, the destanation of this view is `app/views/pages/index.jade`
 
-````
+```Jade
 h1= title
-````
+```
 
 After server is restarted, refresh the browser to see html response:
 
-````
+```HTML
 <h1> Hello World! </h1>
-````
+```
 
 
 
