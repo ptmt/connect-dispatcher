@@ -18,6 +18,7 @@ module.exports = function (options) {
   app.opts.cache = options.cache || process.env['NODE_ENV'] === 'production';
   app.opts.controllersPath = options.controllersPath || './app/controllers';
   app.opts.controllersPath += '/';
+  app.opts.lib = options.lib || {};
 
   app.opts.getControllerFile = options.getControllerFile || function (controllerName) {
     return controllerName + "_controller.js";
@@ -167,6 +168,7 @@ function prepareContext(req, res, next) {
     isAuth: 'isAuthenticated' in req ? req.isAuthenticated() : false,
     request: parseRequest(req.url),
     async: async,
+    lib: app.opts.lib,
     asJson: function (data) {
       data.__json = true;
       return data;
