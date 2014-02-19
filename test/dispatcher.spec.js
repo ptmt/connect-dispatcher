@@ -38,12 +38,26 @@ describe('Dispatcher', function () {
 
     it('should response with 404 if aciton in controlller without __missing_action does not exist', function (done) {
       requestApp()
-        .post('/auth/some_of_unexist_page')
+        .post('/auth/index')
         .end(function (err, res) {
-          console.log(res.text);
+
           expect(res.status).have.to.equal(404);
           expect(res.text).have.to.equal('Not Found');
           done(err);
+        });
+    });
+
+    it('should response with 404 if controller already cached', function (done) {
+      requestApp()
+        .get('/auth/index')
+        .end(function () {
+          requestApp()
+            .post('/auth/index')
+            .end(function (err, res) {
+              expect(res.status).have.to.equal(404);
+              expect(res.text).have.to.equal('Not Found');
+              done(err);
+            });
         });
     });
 
@@ -102,6 +116,8 @@ describe('Dispatcher', function () {
           done(err);
         });
     });
+
+
 
     it('should response with 404 method call this.error404()', function (done) {
       requestApp()

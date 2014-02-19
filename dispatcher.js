@@ -70,7 +70,7 @@ module.exports = function (options) {
 function searchController(httpContext) {
 
   var request = httpContext.request;
-  if (request.controller in app.cachedControllers) { //request.action in app.cachedControllers[request.controller]
+  if (request.controller in app.cachedControllers && (request.action in app.cachedControllers[request.controller] || '__missing_action' in controller)) { //
     return app.cachedControllers[request.controller];
   } else {
 

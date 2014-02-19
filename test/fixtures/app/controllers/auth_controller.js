@@ -7,6 +7,10 @@ module.exports.__before = function () {
   return;
 };
 
+module.exports.index = function () {
+  return 'auth_controller#index';
+};
+
 module.exports.witherror = function () {
   console.log(blabla);
   return 'auth_controller#witherror';
