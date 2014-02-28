@@ -31,7 +31,7 @@ describe('Dispatcher', function () {
         .get('/some_of_unexist_page')
         .end(function (err, res) {
           expect(res.status).have.to.equal(404);
-          expect(res.text).have.to.equal('Not Found');
+          expect(JSON.parse(res.text).status).have.to.equal('Not Found');
           done(err);
         });
     });
@@ -42,7 +42,7 @@ describe('Dispatcher', function () {
         .end(function (err, res) {
 
           expect(res.status).have.to.equal(404);
-          expect(res.text).have.to.equal('Not Found');
+          expect(JSON.parse(res.text).status).have.to.equal('Not Found');
           done(err);
         });
     });
@@ -55,7 +55,7 @@ describe('Dispatcher', function () {
             .post('/auth/index')
             .end(function (err, res) {
               expect(res.status).have.to.equal(404);
-              expect(res.text).have.to.equal('Not Found');
+              expect(JSON.parse(res.text).status).have.to.equal('Not Found');
               done(err);
             });
         });

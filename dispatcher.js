@@ -228,7 +228,9 @@ function renderError404(res) {
   res.writeHeader(404);
   var html = compileJade(null,
     app.opts.viewsPath + app.opts.getViewFile('errors', 'error404'))
-  ({});
+  ({
+    status: "Not Found"
+  });
   res.end(html);
 }
 
@@ -261,19 +263,19 @@ function parseRequest(url, withMissing) {
  */
 function compileJade(httpContext, filename) {
 
-  console.log('going to render ', filename);
+
   if (app.opts.cache && app.cachedViews[filename])
     return app.cachedViews[filename];
 
   if (!fs.existsSync(filename)) {
-    if (httpContext != null)
+    if (httpContext !== null)
       return function (data) {
         return returnJson(httpContext, data);
       };
     else
       return function (data) {
-        return data;
-      }
+        return JSON.stringify(data);
+      };
   }
 
 
