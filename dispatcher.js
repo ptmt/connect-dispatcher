@@ -6,6 +6,8 @@ var jade = require('jade'),
   async = require('async'),
   path = require('path');
 
+//module.exports.errorhandler(options)
+
 module.exports = function (options) {
   app.cachedControllers = {}; //cached controllers as a functions
   app.cachedViews = {}; // cached compiled Jade templates as a functions
@@ -33,6 +35,7 @@ module.exports = function (options) {
 
   return function (req, res, next) {
 
+    res.error500 = renderError500;
     var httpContext = prepareContext(req, res, next);
     var request = httpContext.request;
     if (httpContext.req.method != 'GET') request.action += '_' + httpContext.req.method.toString().toLowerCase();
@@ -71,7 +74,7 @@ module.exports = function (options) {
 function searchController(httpContext) {
 
   var request = httpContext.request;
-  if (request.controller in app.cachedControllers && (request.action in app.cachedControllers[request.controller] || '__missing_action' in app.cachedControllers[request.controller])) { //
+  if (request.controller in app.cachedControllers && (request.action in app.cachedControllers[request.controller] || '__missing_action' in controller)) { //
     return app.cachedControllers[request.controller];
   } else {
 
@@ -185,14 +188,48 @@ function prepareContext(req, res, next) {
       this.res.redirect(to);
     },
     error404: function () {
-      res.statusCode = 404;
-      res.end('Not Found');
+      renderError404(res);
+    },
+    error500: function (err) {
+      renderError500(res, err);
     },
     persistCache: function (data) {
       data.__persist = true;
       return data;
     }
   };
+}
+
+
+
+/*
+ * Render 500 error. If view file (erros/error500.jade) is not exist
+ * then just passed error object to browser
+ */
+
+function renderError500(res, err) {
+  res.writeHeader(500);
+  var html = compileJade(null,
+    app.opts.viewsPath + app.opts.getViewFile('errors', 'error500'))
+  ({
+    title: "500 Internal Server Error",
+    err: err
+  });
+  res.end(html);
+}
+
+
+/*
+ *
+ * Custom 404 error, same as 500.
+ */
+
+function renderError404(res) {
+  res.writeHeader(404);
+  var html = compileJade(null,
+    app.opts.viewsPath + app.opts.getViewFile('errors', 'error404'))
+  ({});
+  res.end(html);
 }
 
 /*
@@ -224,13 +261,21 @@ function parseRequest(url, withMissing) {
  */
 function compileJade(httpContext, filename) {
 
+  console.log('going to render ', filename);
   if (app.opts.cache && app.cachedViews[filename])
     return app.cachedViews[filename];
 
-  if (!fs.existsSync(filename))
-    return function (data) {
-      return returnJson(httpContext, data);
-    };
+  if (!fs.existsSync(filename)) {
+    if (httpContext != null)
+      return function (data) {
+        return returnJson(httpContext, data);
+      };
+    else
+      return function (data) {
+        return data;
+      }
+  }
+
 
   var prevDate = new Date();
   var options = {

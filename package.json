@@ -1,7 +1,7 @@
 {
   "name": "connect-dispatcher",
-  "version": "0.1.9",
-  "description": "yet another connect middleware for dispatch http requests",
+  "version": "0.2.0",
+  "description": "Yet another connect middleware for dispatch http requests",
   "main": "dispatcher.js",
   "directories": {
     "test": "test"
