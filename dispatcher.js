@@ -188,10 +188,13 @@ function prepareContext(req, res, next) {
       this.res.redirect(to);
     },
     error404: function () {
-      renderError404(res);
+      renderError(404, 'Not Found', res);
     },
     error500: function (err) {
-      renderError500(res, err);
+      renderError(500, 'Internal Server Error', res, err);
+    },
+    customResponse: function (statusCode, message) {
+      renderError(statusCode, message, res);
     },
     persistCache: function (data) {
       data.__persist = true;
@@ -200,38 +203,25 @@ function prepareContext(req, res, next) {
   };
 }
 
-
-
 /*
- * Render 500 error. If view file (erros/error500.jade) is not exist
+ *
+ * Custom error. If view file (erros/errorCode.jade) is not exist
  * then just passed error object to browser
  */
 
-function renderError500(res, err) {
-  res.writeHeader(500);
+function renderError(errorCode, errorMessage, res, err) {
+  res.writeHeader(errorCode);
   var html = compileJade(null,
-    app.opts.viewsPath + app.opts.getViewFile('errors', 'error500'))
+    app.opts.viewsPath + app.opts.getViewFile('errors', 'error' + errorCode))
   ({
-    title: "500 Internal Server Error",
-    err: err
+    status: errorMessage,
+    err: err || null
   });
   res.end(html);
 }
 
-
-/*
- *
- * Custom 404 error, same as 500.
- */
-
-function renderError404(res) {
-  res.writeHeader(404);
-  var html = compileJade(null,
-    app.opts.viewsPath + app.opts.getViewFile('errors', 'error404'))
-  ({
-    status: "Not Found"
-  });
-  res.end(html);
+function renderError500(res, err) {
+  renderError(500, 'Internal Server Error', res, err);
 }
 
 /*
@@ -289,7 +279,7 @@ function compileJade(httpContext, filename) {
 
   // Compile a function
   var fn = jade.compile(fs.readFileSync(filename, 'utf8'), options);
-  console.log('compiled jade template: ', filename, " in ms: ", new Date() - prevDate);
+  log.info('compiled jade template: ', filename, " in ms: ", new Date() - prevDate);
 
   if (app.opts.cache)
     app.cachedViews[filename] = fn;

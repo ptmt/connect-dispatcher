@@ -30,6 +30,7 @@ describe('Dispatcher', function () {
       requestApp()
         .get('/some_of_unexist_page')
         .end(function (err, res) {
+
           expect(res.status).have.to.equal(404);
           expect(JSON.parse(res.text).status).have.to.equal('Not Found');
           done(err);
