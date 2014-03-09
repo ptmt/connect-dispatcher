@@ -188,13 +188,13 @@ function prepareContext(req, res, next) {
       this.res.redirect(to);
     },
     error404: function () {
-      renderError(404, 'Not Found', res);
+      renderError(404, res);
     },
     error500: function (err) {
-      renderError(500, 'Internal Server Error', res, err);
+      renderError(500, res, err);
     },
-    customResponse: function (statusCode, message) {
-      renderError(statusCode, message, res);
+    customResponse: function (statusCode, err) {
+      renderError(statusCode, res, err);
     },
     persistCache: function (data) {
       data.__persist = true;
@@ -209,19 +209,18 @@ function prepareContext(req, res, next) {
  * then just passed error object to browser
  */
 
-function renderError(errorCode, errorMessage, res, err) {
+function renderError(errorCode, res, err) {
   res.writeHeader(errorCode);
   var html = compileJade(null,
     app.opts.viewsPath + app.opts.getViewFile('errors', 'error' + errorCode))
   ({
-    status: errorMessage,
     err: err || null
   });
   res.end(html);
 }
 
 function renderError500(res, err) {
-  renderError(500, 'Internal Server Error', res, err);
+  renderError(500, res, err);
 }
 
 /*

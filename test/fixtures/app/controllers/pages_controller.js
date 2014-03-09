@@ -25,3 +25,7 @@ module.exports.missing_controller = function () {
 module.exports.__missing_action = function () {
   return '__missing_action';
 };
+
+module.exports.error400 = function () {
+  this.customResponse(400, 'Custom Error');
+};

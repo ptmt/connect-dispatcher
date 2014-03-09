@@ -18,7 +18,6 @@ describe('Dispatcher', function () {
       requestApp()
         .get('/')
         .end(function (err, res) {
-
           expect(res.status).have.to.equal(200);
           expect(res.text).have.to.equal('pages_controller#index');
           done(err);
@@ -30,9 +29,7 @@ describe('Dispatcher', function () {
       requestApp()
         .get('/some_of_unexist_page')
         .end(function (err, res) {
-
           expect(res.status).have.to.equal(404);
-          expect(JSON.parse(res.text).status).have.to.equal('Not Found');
           done(err);
         });
     });
@@ -41,9 +38,7 @@ describe('Dispatcher', function () {
       requestApp()
         .post('/auth/index')
         .end(function (err, res) {
-
           expect(res.status).have.to.equal(404);
-          expect(JSON.parse(res.text).status).have.to.equal('Not Found');
           done(err);
         });
     });
@@ -56,7 +51,6 @@ describe('Dispatcher', function () {
             .post('/auth/index')
             .end(function (err, res) {
               expect(res.status).have.to.equal(404);
-              expect(JSON.parse(res.text).status).have.to.equal('Not Found');
               done(err);
             });
         });
@@ -152,6 +146,22 @@ describe('Dispatcher', function () {
           expect(res.statusCode).have.to.equal(200);
           var json = JSON.parse(res.text);
           expect(json).have.to.equal('unexisting_page');
+          done(err);
+        });
+    });
+
+  });
+
+  describe('Custom Responses', function () {
+
+    it('400 Bad Request with custom error', function (done) {
+      requestAppMissingCountroller()
+        .get('/pages/error400')
+        .end(function (err, res) {
+          console.log(res.text);
+          expect(res.statusCode).have.to.equal(400);
+          var json = JSON.parse(res.text);
+          expect(json.err).have.to.equal('Custom Error');
           done(err);
         });
     });
