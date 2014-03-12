@@ -211,13 +211,21 @@ function prepareContext(req, res, next) {
 
 function renderError(errorCode, res, err) {
   res.writeHeader(errorCode);
+
   var html = compileJade(null,
     app.opts.viewsPath + app.opts.getViewFile('errors', 'error' + errorCode))
   ({
+    title: errorCode,
     err: err || null
   });
   res.end(html);
 }
+
+/*
+ *
+ * 500 internal error. If view file (erros/errorCode.jade) is not exist
+ * then just passed error object to browser
+ */
 
 function renderError500(res, err) {
   renderError(500, res, err);
