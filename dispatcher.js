@@ -108,7 +108,7 @@ Function.prototype.render = function (httpContext) {
     data.isAuth = httpContext.isAuth;
     var result = (function () {
 
-      if (data.__json || (httpContext.req.query && httpContext.req.query.json) || isXhr(httpContext.req.headers)) {
+      if (data.__json || (httpContext.req.query && httpContext.req.query.json) || httpContext.request.isXhr) {
 
         delete data.__json;
         httpContext.res.writeHead(200, {
@@ -169,6 +169,7 @@ function prepareContext(req, res, next) {
     res: res,
     next: next,
     isAuth: 'isAuthenticated' in req ? req.isAuthenticated() : false,
+    isXhr: isXhr(req.headers),
     request: parseRequest(req.url),
     async: async,
     lib: app.opts.lib,

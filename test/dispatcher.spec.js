@@ -1,3 +1,4 @@
+/* global describe, before, it, process */
 var expect = require('chai').expect,
   connect = require('connect'),
   //  mocks = require('mocks')
@@ -168,6 +169,8 @@ describe('Dispatcher', function () {
 
   });
 
+
+
 });
 
 function requestApp() {
@@ -188,4 +191,10 @@ function requestAppMissingCountroller() {
   }));
 
   return request(app);
+}
+
+function makeItBehindHttps(request) {
+  return request
+    .set('X-Forwarded-Proto', 'https')
+    .set('X-Forwarded-For', '172.1.1.1');
 }
