@@ -108,8 +108,8 @@ Function.prototype.render = function (httpContext) {
     data.isAuth = httpContext.isAuth;
     var result = (function () {
 
-      if (data.__json || (httpContext.req.query && httpContext.req.query.json) || httpContext.request.isXhr) {
-
+      if (data.__json || (httpContext.req.query && httpContext.req.query.json) || httpContext.isXhr) {
+        console.log('JSON');
         delete data.__json;
         httpContext.res.writeHead(200, {
           'Content-Type': 'application/json'
