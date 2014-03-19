@@ -159,11 +159,36 @@ describe('Dispatcher', function () {
       requestAppMissingCountroller()
         .get('/pages/error400')
         .end(function (err, res) {
-          console.log(res.text);
+
           expect(res.statusCode).have.to.equal(400);
           var json = JSON.parse(res.text);
           expect(json.err).have.to.equal('Custom Error');
           done(err);
+        });
+    });
+
+  });
+
+  describe('Flash redirects', function () {
+
+    it('should defaults to error', function (done) {
+      requestAppMissingCountroller()
+        .get('/pages/flasherror')
+        .end(function (err, res) {
+          var cookie = res.headers['set-cookie'];
+          expect(res.statusCode).have.to.equal(302);
+
+          requestAppMissingCountroller()
+            .get('/pages/flasherror?no_flash=1')
+            .set('cookie', cookie)
+            .end(function (err1, res1) {
+
+              var json = JSON.parse(res1.text);
+              expect(json.flash.appearance).have.to.equal('error');
+              expect(json.flash.message).have.to.equal('some_kind_of_error');
+              done(err);
+            });
+
         });
     });
 
@@ -184,6 +209,14 @@ function requestApp() {
 function requestAppMissingCountroller() {
   var app = connect();
   app.use(connect.query());
+  app.use(require('quip'));
+  app.use(connect.cookieParser('4jdapuj4qhgyp87a82'));
+  app.use(connect.cookieSession({
+    secret: 'no secrets',
+    cookie: {
+      maxAge: 60 * 60 * 1000
+    }
+  }));
   app.use(dispatcher({
     routes: {
       '__missing_controller': '/pages/missing_controller'

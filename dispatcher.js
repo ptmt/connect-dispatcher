@@ -103,13 +103,14 @@ Function.prototype.render = function (httpContext) {
   var onActionComplete = function (data) {
 
     var flash = fetchFlashMessages(httpContext);
+
     data = data || {};
     data.flash = flash;
     data.isAuth = httpContext.isAuth;
     var result = (function () {
 
       if (data.__json || (httpContext.req.query && httpContext.req.query.json) || httpContext.isXhr) {
-        console.log('JSON');
+
         delete data.__json;
         httpContext.res.writeHead(200, {
           'Content-Type': 'application/json'
@@ -155,6 +156,7 @@ function returnJson(httpContext, data) {
 }
 
 function fetchFlashMessages(httpContext) {
+
   if (httpContext.req.session && httpContext.req.session.flash) {
     var flash = httpContext.req.session.flash;
     delete httpContext.req.session.flash;
@@ -182,8 +184,15 @@ function prepareContext(req, res, next) {
       d.__text = data;
       return d;
     },
-    flash: function (message, to) {
-      this.req.session.flash = message;
+    flash: function (message, appearance, to) {
+      if (!to) {
+        to = appearance;
+        appearance = 'error';
+      }
+      req.session.flash = {
+        appearance: appearance,
+        message: message
+      };
       if (req.query.json == 1)
         to += '?json=1';
       this.res.redirect(to);

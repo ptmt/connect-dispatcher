@@ -14,9 +14,23 @@ module.exports.no_view = module.exports.no_view_post = function () {
   return 'pages_controller#no_view';
 };
 
-module.exports.no_view_and_async = function (render) {
-  render('pages_controller#no_view_and_async');
+module.exports.no_view_and_async = function (asyncRender) {
+  asyncRender('pages_controller#no_view_and_async');
 };
+
+module.exports.flasherror = function () {
+  if (!this.req.query.no_flash) {
+    this.req.session.some = 1;
+    return this.flash('some_kind_of_error', 'error', '/pages/flasherror?no_flash=1');
+  } else {
+
+    return this.asJson({
+      somethins: 'usual'
+    });
+  }
+
+};
+
 
 module.exports.missing_controller = function () {
   return this.asJson(this.request.params[0]);

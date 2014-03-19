@@ -1,6 +1,6 @@
 {
   "name": "connect-dispatcher",
-  "version": "0.2.5",
+  "version": "0.2.7",
   "description": "Yet another connect middleware for dispatch http requests",
   "main": "dispatcher.js",
   "directories": {
@@ -29,6 +29,7 @@
     "mocha": "~1.17.1",
     "chai": "~1.8.1",
     "supertest": "~0.9.0",
-    "mocks": "0.0.15"
+    "mocks": "0.0.15",
+    "quip": "~0.1.2"
   }
 }
