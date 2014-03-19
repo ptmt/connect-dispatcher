@@ -105,7 +105,7 @@ Function.prototype.render = function (httpContext) {
     var flash = fetchFlashMessages(httpContext);
 
     data = data || {};
-    data.flash = flash;
+    data.flash = data.flash || flash;
     data.isAuth = httpContext.isAuth;
     var result = (function () {
 
