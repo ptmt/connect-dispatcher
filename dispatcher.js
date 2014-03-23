@@ -114,10 +114,12 @@ Function.prototype.render = function (httpContext) {
       if (data.__json || (httpContext.req.query && httpContext.req.query.json) || httpContext.isXhr) {
 
         delete data.__json;
-        httpContext.res.writeHead(200, {
-          'Content-Type': 'application/json'
-        });
-        return JSON.stringify(data);
+        if (!httpContext.res.headersSent) {
+          httpContext.res.writeHead(200, {
+            'Content-Type': 'application/json'
+          });
+          return JSON.stringify(data);
+        }
       } else {
         if (data.__text)
           return data.__text;
