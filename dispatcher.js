@@ -128,8 +128,8 @@ Function.prototype.render = function (httpContext) {
         (data);
       }
     })();
-
-    httpContext.res.end(result);
+    if (!httpContext.res.headersSent)
+      httpContext.res.end(result);
     if (app.opts.cache && data.__persist)
       app.persistCache[cacheKey] = result;
 
