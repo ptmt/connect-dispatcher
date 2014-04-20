@@ -1,13 +1,14 @@
 connect-dispatcher
 ==================
 
-Yet another Node.js Connect dispatcher module.
+Node.js Connect dispatcher module. Router + pattern organizer.
 
 Why?
 
-1. Conventions over configurations. No more large routes tables.
-2. Controller return data to views, explicit or implicit render it depends from context. You can process first response on the server-side, then render the same view in the browser.
-2. Cache controllers, views or persist in cache entire page. Currently cache stored in memory, but not a big deal move on to Redis.
+1. Conventions over configurations. No more huge routes tables.
+2. It has to be simple. A controller returns data to a views, explicit or implicit renders the diffirent type of views depends from context.
+You can process a first response on the server-side, then render the same view in the browser.
+2. Caching controllers, views or you can persist in a cache the entire page. Currently cache stored in a memory, but not a big deal move on to Redis.
 4. Small size footprint, just single file dispatcher.js
 
 For more information see [examples](https://github.com/unknownexception/connect-dispatcher/tree/master/examples) and [tests](https://github.com/unknownexception/connect-dispatcher/tree/master/test).
@@ -20,7 +21,7 @@ First, install packages via npm:
 npm install connect-dispatcher
 ```
 
-Second, create new file `app.js`:
+Second, create a new file `app.js`:
 
 ```JavaScript
 var app = require('connect')(),
@@ -41,7 +42,7 @@ pages.index = function () {
 };
 ```
 
-It produces simple response to the browser, without view rendering. To enable this, change code to:
+It produces simple plain-text response to the browser, without view rendering. To enable template-engine rendering, change code to:
 
 ```JavaScript
 var pages = module.exports;
@@ -53,13 +54,13 @@ pages.index = function () {
 };
 ```
 
-and add jade template. By default, the destanation of this view is `app/views/pages/index.jade`
+and add to project a jade template. By default, the location of this view is `app/views/pages/index.jade`
 
 ```Jade
 h1= title
 ```
 
-After server is restarted, refresh the browser to see html response:
+After server is restarted, refresh the browser to see html response (if you are not using livereload):
 
 ```HTML
 <h1> Hello World! </h1>
