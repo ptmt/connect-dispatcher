@@ -1,7 +1,7 @@
 connect-dispatcher
 ==================
 
-Node.js Connect dispatcher module. Router + pattern organizer.
+Node.js connect module. Yet another.
 
 Why?
 
