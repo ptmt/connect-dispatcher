@@ -135,6 +135,8 @@ describe('Dispatcher', function () {
         });
     });
 
+
+
   });
 
   describe('__missing_controller', function () {
@@ -149,6 +151,20 @@ describe('Dispatcher', function () {
           expect(json).have.to.equal('unexisting_page');
           done(err);
         });
+    });
+
+  });
+
+  describe('options method', function () {
+
+    it('should not affect to action', function (done) {
+      requestApp()
+          .options('/')
+          .end(function (err, res) {
+            expect(res.status).have.to.equal(200);
+            expect(res.text).have.to.equal('pages_controller#index');
+            done(err);
+          });
     });
 
   });

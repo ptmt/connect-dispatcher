@@ -1,6 +1,6 @@
 {
   "name": "connect-dispatcher",
-  "version": "0.2.12",
+  "version": "0.3.0",
   "description": "Yet another connect middleware for dispatch http requests",
   "main": "dispatcher.js",
   "directories": {
@@ -25,11 +25,14 @@
   },
   "homepage": "https://github.com/unknownexception/connect-dispatcher",
   "devDependencies": {
-    "connect": "~2.12.0",
-    "mocha": "~1.17.1",
+    "async": "^0.7.0",
     "chai": "~1.8.1",
-    "supertest": "~0.9.0",
+    "connect": "~2.12.0",
+    "jade": "^1.3.1",
+    "metalogger": "^0.1.15",
+    "mocha": "~1.17.1",
     "mocks": "0.0.15",
-    "quip": "~0.1.2"
+    "quip": "~0.1.2",
+    "supertest": "~0.9.0"
   }
 }

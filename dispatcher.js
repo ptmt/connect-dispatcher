@@ -40,7 +40,7 @@ module.exports = function (options) {
     var request = httpContext.request;
     if (request.action.toLowerCase().indexOf('_post') > -1 || request.action.toLowerCase().indexOf('_delete') > -1)
       httpContext.error404(); // should be 403 or something
-    if (httpContext.req.method != 'GET') request.action += '_' + httpContext.req.method.toString().toLowerCase();
+    if (httpContext.req.method != 'GET' && httpContext.req.method != 'OPTIONS') request.action += '_' + httpContext.req.method.toString().toLowerCase();
     log.debug('parsed request', request);
     // search controller, it exists in cached dictionary, get from it and render
     var controller = searchController(httpContext);
