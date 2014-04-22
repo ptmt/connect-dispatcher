@@ -124,12 +124,21 @@ describe('Dispatcher', function () {
         });
     });
 
+    it('should able to parse diffirent parameters', function (done) {
+      requestApp()
+        .get('/pages/three/1/2/3')
+        .end(function (err, res) {
+          expect(res.status).have.to.equal(200);
+          expect(JSON.parse(res.text).length).have.to.equal(3)
+          done(err);
+        });
+    });
+
 
     it('should execute __before filter before each request', function (done) {
       requestApp()
         .get('/auth/witherror')
         .end(function (err, res) {
-
           expect(res.statusCode).have.to.equal(302);
           done(err);
         });
