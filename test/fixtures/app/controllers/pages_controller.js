@@ -18,7 +18,7 @@ module.exports.no_view_and_async = function (asyncRender) {
   asyncRender('pages_controller#no_view_and_async');
 };
 
-module.exports.three = function () {
+module.exports.three_post = function () {
     return this.request.params;
 }
 module.exports.flasherror = function () {

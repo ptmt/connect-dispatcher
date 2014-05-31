@@ -8,7 +8,7 @@ var jade = require('jade'),
 
 //module.exports.errorhandler(options)
 
-module.exports = function (options) {
+module.exports = function(options) {
   app.cachedControllers = {}; //cached controllers as a functions
   app.cachedViews = {}; // cached compiled Jade templates as a functions
   app.persistCache = {}; // cached final html
@@ -22,45 +22,50 @@ module.exports = function (options) {
   app.opts.controllersPath += '/';
   app.opts.lib = options.lib || {};
 
-  app.opts.getControllerFile = options.getControllerFile || function (controllerName) {
-    return controllerName + "_controller.js";
+  app.opts.getControllerFile = options.getControllerFile || function(
+    controllerName) {
+    return controllerName + '_controller.js';
   };
   app.opts.viewsPath = options.viewsPath ||
-    (process.env['NODE_ENV'] === 'production' ? './app/min_views' : './app/views');
+    (process.env.NODE_ENV === 'production' ? './app/min_views' :
+    './app/views');
   app.opts.viewsPath += '/';
-  app.opts.getViewFile = options.getViewFile || function (controllerName, actionName) {
-    return controllerName + '/' + actionName + ".jade";
+  app.opts.getViewFile = options.getViewFile || function(controllerName,
+    actionName) {
+    return controllerName + '/' + actionName + '.jade';
   };
 
-
-  return function (req, res, next) {
+  return function(req, res, next) {
 
     res.error500 = renderError500;
     var httpContext = prepareContext(req, res, next);
     var request = httpContext.request;
-    if (request.action.toLowerCase().indexOf('_post') > -1 || request.action.toLowerCase().indexOf('_delete') > -1)
+    if (request.action.toLowerCase().indexOf('_post') > -1 ||
+      request.action.toLowerCase().indexOf('_delete') > -1) {
       httpContext.error404(); // should be 403 or something
-    if (httpContext.req.method != 'GET' && httpContext.req.method != 'OPTIONS') request.action += '_' + httpContext.req.method.toString().toLowerCase();
+    }
+    if (httpContext.req.method != 'GET' &&
+      httpContext.req.method != 'OPTIONS') {
+      request.action += '_' + httpContext.req.method.toString().toLowerCase();
+    }
     log.debug('parsed request', request);
     // search controller, it exists in cached dictionary, get from it and render
     var controller = searchController(httpContext);
-
     if (!controller && '__missing_controller' in app.routes) {
       httpContext.request = request = parseRequest(httpContext.req.url, true);
       controller = searchController(httpContext);
     }
 
     if (controller) {
-      if (controller.__before)
+      if (controller.__before) {
         controller.__before.call(httpContext);
-
-      if (httpContext.res.statusCode === 302)
+      }
+      if (httpContext.res.statusCode === 302) {
         return;
-
-      if (request.action in controller)
+      }
+      if (request.action in controller) {
         controller[request.action].render(httpContext);
-
-      else {
+      } else {
         httpContext.request.params[0] = httpContext.request.action;
         httpContext.request.action = '__missing_action';
         controller['__missing_action'].render(httpContext);
@@ -76,15 +81,19 @@ module.exports = function (options) {
 function searchController(httpContext) {
 
   var request = httpContext.request;
-  if (request.controller in app.cachedControllers && (request.action in app.cachedControllers[request.controller] || '__missing_action' in app.cachedControllers[request.controller])) { //
+  if (request.controller in app.cachedControllers && (request.action in app.cachedControllers[
+    request.controller] || '__missing_action' in app.cachedControllers[
+    request.controller])) { //
     return app.cachedControllers[request.controller];
   } else {
 
-    var ctrlpath = app.opts.controllersPath + app.opts.getControllerFile(request.controller);
+    var ctrlpath = app.opts.controllersPath + app.opts.getControllerFile(
+      request.controller);
 
     if (fs.existsSync(ctrlpath)) {
       var controller = require(path.resolve(ctrlpath));
-      if (controller && (request.action in controller) || '__missing_action' in controller) {
+      if (controller && (request.action in controller) || '__missing_action' in
+        controller) {
         app.cachedControllers[request.controller] = controller;
         return controller;
 
@@ -98,46 +107,47 @@ function searchController(httpContext) {
   }
 }
 
+Function.prototype.render = function(httpContext) {
 
-
-Function.prototype.render = function (httpContext) {
-
-  var onActionComplete = function (data) {
+  var onActionComplete = function(data) {
 
     var flash = fetchFlashMessages(httpContext);
 
     data = data || {};
     data.flash = data.flash || flash;
     data.isAuth = httpContext.isAuth;
-    var result = (function () {
+    var result = (function() {
 
-      if (data.__json || (httpContext.req.query && httpContext.req.query.json) || httpContext.isXhr) {
+      if (data.__json || (httpContext.req.query && httpContext.req.query.json) ||
+        httpContext.isXhr) {
 
         delete data.__json;
         if (!httpContext.res.headersSent) {
-          httpContext.res.writeHead(200, {
-            'Content-Type': 'application/json'
-          });
-          return JSON.stringify(data);
+          return returnJson(httpContext, data);
+
         }
       } else {
-        if (data.__text)
+        if (data.__text) {
           return data.__text;
+        }
         return compileJade(httpContext,
-          app.opts.viewsPath + app.opts.getViewFile(httpContext.request.controller, httpContext.request.action))
+          app.opts.viewsPath + app.opts.getViewFile(httpContext.request.controller,
+            httpContext.request.action))
         (data);
       }
     })();
     //if (!httpContext.res.headersSent)
     httpContext.res.end(result);
-    if (app.opts.cache && data.__persist)
+    if (app.opts.cache && data.__persist) {
       app.persistCache[cacheKey] = result;
+    }
 
   };
 
   var cacheKey = httpContext.req.url;
-  if (app.opts.renderHook)
+  if (app.opts.renderHook) {
     app.opts.renderHook(httpContext);
+  }
   // TODO: NO CACHE FOR POST/PUT AND IF FLUSH MESSAGES EXIST
   if (app.opts.cache && cacheKey in app.persistCache) {
     httpContext.res.end(app.persistCache[cacheKey]);
@@ -145,10 +155,11 @@ Function.prototype.render = function (httpContext) {
     var data = this.call(httpContext, onActionComplete) || {
       '__skip': true
     };
-    if (data.__skip)
+    if (data.__skip) {
       return; // async version of action
-    else
+    } else {
       onActionComplete(data); // sync version of action
+    }
   }
 };
 
@@ -179,16 +190,16 @@ function prepareContext(req, res, next) {
     request: parseRequest(req.url),
     async: async,
     lib: app.opts.lib,
-    asJson: function (data) {
+    asJson: function(data) {
       data.__json = true;
       return data;
     },
-    asText: function (data) {
+    asText: function(data) {
       var d = {};
       d.__text = data;
       return d;
     },
-    flash: function (message, appearance, to) {
+    flash: function(message, appearance, to) {
       if (!to) {
         to = appearance;
         appearance = 'error';
@@ -197,20 +208,26 @@ function prepareContext(req, res, next) {
         appearance: appearance,
         message: message
       };
-      if (req.query.json == 1)
+      if (req.query.json == 1) {
         to += '?json=1';
-      this.res.redirect(to);
+      }
+      if (req.query.access_token) {
+        return returnJson(this, req.session.flash);
+      } else {
+        this.res.redirect(to);
+      }
+
     },
-    error404: function () {
+    error404: function() {
       renderError(404, res);
     },
-    error500: function (err) {
+    error500: function(err) {
       renderError(500, res, err);
     },
-    customResponse: function (statusCode, err) {
+    customResponse: function(statusCode, err) {
       renderError(statusCode, res, err);
     },
-    persistCache: function (data) {
+    persistCache: function(data) {
       data.__persist = true;
       return data;
     }
@@ -255,14 +272,15 @@ function parseRequest(url, withMissing) {
 
   if (path in app.routes) {
     path = app.routes[path];
-  } else if (withMissing && '__missing_controller' in app.routes)
+  } else if (withMissing && '__missing_controller' in app.routes) {
     path = app.routes['__missing_controller'] + path;
+  }
 
   var parsed_request = {};
   // TODO: add checking first chat /
   var segments = path.split('/');
   parsed_request.controller = segments[1] || 'pages';
-  parsed_request.action = segments[2] || "index";
+  parsed_request.action = segments[2] || 'index';
   parsed_request.params = segments.slice(3, segments.length);
 
   return parsed_request;
@@ -274,21 +292,19 @@ function parseRequest(url, withMissing) {
  */
 function compileJade(httpContext, filename) {
 
-
-  if (app.opts.cache && app.cachedViews[filename])
+  if (app.opts.cache && app.cachedViews[filename]) {
     return app.cachedViews[filename];
-
-  if (!fs.existsSync(filename)) {
-    if (httpContext !== null)
-      return function (data) {
-        return returnJson(httpContext, data);
-      };
-    else
-      return function (data) {
-        return JSON.stringify(data);
-      };
   }
 
+  if (!fs.existsSync(filename)) {
+
+    return function(data) {
+      return httpContext !== null ?
+        returnJson(httpContext, data) :
+        JSON.stringify(data);
+    };
+
+  }
 
   var prevDate = new Date();
   var options = {
@@ -300,18 +316,22 @@ function compileJade(httpContext, filename) {
 
   // Compile a function
   var fn = jade.compile(fs.readFileSync(filename, 'utf8'), options);
-  log.info('compiled jade template: ', filename, " in ms: ", new Date() - prevDate);
+  log.info('compiled jade template: ', filename, ' in ms: ', new Date() -
+    prevDate);
 
-  if (app.opts.cache)
+  if (app.opts.cache) {
     app.cachedViews[filename] = fn;
+  }
 
   return fn;
 }
 
 function isXhr(headers) {
-  if ('x-requested-with' in headers)
+  if ('x-requested-with' in headers) {
     return headers['x-requested-with'].toLowerCase() === 'xmlhttprequest';
-  if ('X-Requested-With' in headers)
+  }
+  if ('X-Requested-With' in headers) {
     return headers['X-Requested-With'].toLowerCase() === 'xmlhttprequest';
+  }
   return false;
 }
