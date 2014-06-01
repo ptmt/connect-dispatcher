@@ -17,7 +17,7 @@ module.exports = function(options) {
   app.opts = app.opts || {};
   app.routes = options.routes || {};
   app.opts.renderHook = options.renderHook || null;
-  app.opts.cache = options.cache || process.env['NODE_ENV'] === 'production';
+  app.opts.cache = options.cache || process.env.NODE_ENV === 'production';
   app.opts.controllersPath = options.controllersPath || './app/controllers';
   app.opts.controllersPath += '/';
   app.opts.lib = options.lib || {};
@@ -212,7 +212,7 @@ function prepareContext(req, res, next) {
         to += '?json=1';
       }
       if (req.query.access_token) {
-        return returnJson(this, req.session.flash);
+        res.end(returnJson(this, req.session.flash));
       } else {
         this.res.redirect(to);
       }
