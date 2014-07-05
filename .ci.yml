@@ -1,3 +1,3 @@
-environment
-	image: node
+environment:
+  image: node
 
