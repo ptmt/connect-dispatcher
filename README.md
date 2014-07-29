@@ -1,5 +1,6 @@
 connect-dispatcher
 ==================
+[ ![Codeship Status for unknownexception/connect-dispatcher](https://www.codeship.io/projects/11527a50-f90d-0131-a739-5e0e92dbe03c/status)](https://www.codeship.io/projects/28799)
 
 Node.js connect module. Yet another.
 
