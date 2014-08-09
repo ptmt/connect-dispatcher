@@ -12,6 +12,6 @@ module.exports.index = function () {
 };
 
 module.exports.witherror = function () {
-  console.log(blabla);
+  console.log(some_undefined_var);
   return 'auth_controller#witherror';
 };

@@ -15,7 +15,10 @@ module.exports.no_view = module.exports.no_view_post = function () {
 };
 
 module.exports.no_view_and_async = function (asyncRender) {
-  asyncRender('pages_controller#no_view_and_async');
+  setTimeout(function longTask() {
+    asyncRender('pages_controller#no_view_and_async');
+  }, 100);
+
 };
 
 module.exports.three_post = function () {
