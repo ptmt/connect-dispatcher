@@ -122,7 +122,7 @@ Function.prototype.render = function(httpContext) {
         httpContext.isXhr) {
 
         delete data.__json;
-        if (!httpContext.res.headersSent) {
+        if (!httpContext.res.headerSent) {
           return returnJson(httpContext, data);
 
         }
@@ -136,8 +136,10 @@ Function.prototype.render = function(httpContext) {
         (data);
       }
     })();
-    //if (!httpContext.res.headersSent)
-    httpContext.res.end(result);
+    if (!httpContext.res.resultSent) {
+      httpContext.res.end(result);
+      httpContext.res.resultSent = true;
+    }
     if (app.opts.cache && data.__persist) {
       app.persistCache[cacheKey] = result;
     }
@@ -214,7 +216,9 @@ function prepareContext(req, res, next) {
       if (req.query.access_token) {
         res.end(returnJson(this, req.session.flash));
       } else {
-        this.res.redirect(to);
+        if (!res.headerSent) {
+          this.res.redirect(to);
+        }
       }
 
     },

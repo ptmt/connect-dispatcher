@@ -13,18 +13,12 @@ module.exports.many_callbacks = function (render) {
 
   // and then other
   setTimeout(function() {
-    render(ctx.asText('first'));
+    if (ctx.request.params.length === 0) {
+      render(ctx.asText('first'));
+    }
     setTimeout(function() {
-      console.log('a2');
-      if (this.request.params.length === 0) {
-        ctx.res.writeHead(302, {
-          'Location': '/bad/two_callbacks'
-        });
-        ctx.res.end();
-      }
       setTimeout(function() {
-        console.log('a3');
-        render(ctx.asText('third'));
+        render(ctx.asText('second'));
       }, 20);
     }, 20);
 

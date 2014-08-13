@@ -219,29 +219,42 @@ describe('Dispatcher', function() {
       var app = connect();
       app.use(connect.query());
       app.use(dispatcher());
-        request(app)
+      request(app)
         .get('/bad/two_callbacks')
         .expect(200)
         .end(function(err, res) {
           expect(res.text).have.to.equal('first');
           request(app)
-          .get('/bad/two_callbacks/second')
+            .get('/bad/two_callbacks/second')
+            .expect(200)
+            .end(function(err, res) {
+              expect(res.text).have.to.equal('second');
+              done(err);
+            });
+        });
+    });
+
+    it('ok with callbacks & redirects', function(done) {
+      var app = connect();
+      app.use(connect.query());
+      app.use(dispatcher());
+      request(app)
+        .get('/bad/many_callbacks')
+        .expect(200)
+        .end(function(err, res) {
+          expect(res.text).have.to.equal('first');
+        });
+
+      setTimeout(function() {
+        request(app)
+          .get('/bad/many_callbacks/second')
           .expect(200)
           .end(function(err, res) {
             expect(res.text).have.to.equal('second');
             done(err);
           });
-        });
-    });
+      }, 200);
 
-    it('ok with callbacks & redirects', function(done) {
-        requestApp()
-        .get('/bad/many_callbacks')
-        .expect(200)
-        .end(function(err, res) {
-          expect(res.text).have.to.equal('first');
-          done(err);
-        });
     });
 
   });
