@@ -122,7 +122,7 @@ Function.prototype.render = function(httpContext) {
         httpContext.isXhr) {
 
         delete data.__json;
-        if (!httpContext.res.headerSent) {
+        if (!httpContext.res.headersSent) {
           return returnJson(httpContext, data);
 
         }
@@ -245,15 +245,17 @@ function prepareContext(req, res, next) {
  */
 
 function renderError(errorCode, res, err) {
-  res.writeHeader(errorCode);
+  if (!res.headersSent) {
+    res.writeHeader(errorCode);
 
-  var html = compileJade(null,
-    app.opts.viewsPath + app.opts.getViewFile('errors', 'error' + errorCode))
-  ({
-    title: errorCode,
-    err: err || null
-  });
-  res.end(html);
+    var html = compileJade(null,
+      app.opts.viewsPath + app.opts.getViewFile('errors', 'error' + errorCode))
+    ({
+      title: errorCode,
+      err: err || null
+    });
+    res.end(html);
+  }
 }
 
 /*
