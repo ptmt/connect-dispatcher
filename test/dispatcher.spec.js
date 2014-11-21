@@ -1,8 +1,6 @@
 /* global describe, before, it, process */
 var expect = require('chai').expect,
   connect = require('connect'),
-  //  mocks = require('mocks')
-
   dispatcher = require('../dispatcher.js'),
   request = require('supertest');
 
