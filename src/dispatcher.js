@@ -108,6 +108,12 @@ class Dispatcher {
   }
 
   prepareContext(req, res, next) {
+    res.redirect = function(to) {
+      res.statusCode = 302;
+      res.setHeader('Location', to);
+      res.setHeader('Content-Length', '0');
+      res.end();
+    }
     return {
       req: req,
       res: res,
@@ -141,10 +147,7 @@ class Dispatcher {
           res.end(this.returnJson(this, req.session.flash));
         } else {
           if (!res.headerSent) {
-            res.statusCode = 302;
-            res.setHeader('Location', to);
-            res.setHeader('Content-Length', '0');
-            res.end();
+            res.redirect(to);
           }
         }
       },
