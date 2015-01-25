@@ -1,64 +1,44 @@
 /* global __dirname:true, exports:true, process:true */
 var log = require('metalogger')(),
-  CONF = require('config'),
   connect = require('connect'),
-  dispatcher = require('connect-dispatcher'),
+  dispatcher = require('../../dispatcher'),
   quip = require('quip'),
   log = require('metalogger')();
 
-var db = require('../models');
+setup(connect()).listen(3002);
+console.log('listen at 3002');
 
-exports = module.exports;
-
-exports.setup = function (app) {
-
+function setup (app) {
   "use strict";
-
-  if ('undefined' === typeof process.env.NODE_ENV)
-    process.env['NODE_ENV'] = 'development';
-
-  if (process.env['NODE_SERVE_STATIC'] === '1' || 'undefined' === typeof process.env.NODE_SERVE_STATIC) {
-    app.use(require('connect-livereload')());
-    app.use(connect.static(__dirname + '/../../public'));
-  } else {
-    var newrelic = require('newrelic'); // enable New Relic monitoring
-  }
-
 
   app.use(connect.json());
   app.use(connect.urlencoded());
   app.use(connect.query());
-
-  require('./passport.js').setupPassport(app);
-  app.use(connect.responseTime());
+  app.use(connect.cookieParser('4jdapuj4qhgyp87a82'));
+  app.use(connect.cookieSession({
+    secret: 'no secrets',
+    cookie: {
+      maxAge: 60 * 60 * 1000
+    }
+  }));
 
   var aliases = {
     '/': '/pages/index',
     '/howitworks': '/pages/howitworks',
-    '/login': '/auth/login',
-    '__missing_controller': '/items/destination'
+    '__missing_controller': '/pages/index'
   };
   app.use(dispatcher({
     routes: aliases,
     renderHook: function (ctx) {
-      if (process.env['NODE_ENV'] === 'development')
-        console.log('parsed request', ctx.request.controller + '/' + ctx.request.action + '/' + (ctx.request.params[0] || ''));
-      else if (newrelic)
-        newrelic.setTransactionName(ctx.request.controller + '/' + ctx.request.action);
-    },
-    lib: {
-      noti: require('./notifications')
+      console.log('parsed request', ctx.request.controller + '/' + ctx.request.action + '/' + (ctx.request.params[0] || ''));
     }
   }));
 
-  if (process.env['NODE_ENV'] === 'development') {
-    app.use(connect.errorHandler());
-  }
+  app.use(connect.errorHandler());
 
   app.use(function catchAllErrorHandler(err, req, res, next) {
-
     // Emergency: means system is unusable
-    log.emergency('process exit', err);
+    log.emergency('process exit', JSON.stringify(err));
     // workaround for displaying custom error
     res.error500(res, err);
     setTimeout(function () { // Give a chance for response to be sent, before killing the process
@@ -66,5 +46,7 @@ exports.setup = function (app) {
     }, 100);
 
   });
+
+  return app;
 
 };

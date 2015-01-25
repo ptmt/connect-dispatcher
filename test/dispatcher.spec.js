@@ -1,8 +1,6 @@
 /* global describe, before, it, process */
 var expect = require('chai').expect,
   connect = require('connect'),
-  //  mocks = require('mocks')
-
   dispatcher = require('../dispatcher.js'),
   request = require('supertest');
 
@@ -147,7 +145,7 @@ describe('Dispatcher', function() {
         requestAppMissingCountroller()
           .get('/unexisting_page')
           .end(function(err, res) {
-
+            console.log(err);
             expect(res.statusCode).have.to.equal(200);
             var json = JSON.parse(res.text);
             expect(json).have.to.equal('unexisting_page');
@@ -271,7 +269,6 @@ function requestApp() {
 function requestAppMissingCountroller() {
   var app = connect();
   app.use(connect.query());
-  app.use(require('quip'));
   app.use(connect.cookieParser('4jdapuj4qhgyp87a82'));
   app.use(connect.cookieSession({
     secret: 'no secrets',
