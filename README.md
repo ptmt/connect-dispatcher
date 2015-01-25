@@ -2,7 +2,7 @@ connect-dispatcher
 ==================
 [ ![Codeship Status for unknownexception/connect-dispatcher](https://www.codeship.io/projects/11527a50-f90d-0131-a739-5e0e92dbe03c/status)](https://www.codeship.io/projects/28799)
 
-_Disclaimer_. `connect-dispatcher` is outdates. See koajs, rest, react-router or other frameworks. 
+_Disclaimer_. `connect-dispatcher` is outdated. See koajs, rest, react-router or other frameworks. 
 
 Why?
 
