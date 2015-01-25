@@ -4,32 +4,32 @@ var fs = require('fs');
 var jade = require('jade');
 var path = require('path');
 
-                          
-                       
-                 
-                          
-                    
-                              
-                        
-              
-           
- 
+type DispatcherOptions = {
+  renderHook: Function;
+  cache: boolean;
+  controllersPath: string;
+  viewsPath: string;
+  getControllerFile: Function;
+  getViewFile: Function;
+  routes: any;
+  lib: any;
+}
 
+class Dispatcher {
+  cachedControllers: Array<Function>;
+  cachedViews: Array<Function>;
+  cachedHtml: Array<string>;
+  options: DispatcherOptions;
+  routes: any;
 
-                                     
-                               
-                            
-                             
-              
-
-  function Dispatcher(options)                              {"use strict";
+  constructor(options: DispatcherOptions): Function {
     this.options = this.extend({
       renderHook: null,
       cache : process.env.NODE_ENV === 'production',
       controllersPath : './app/controllers',
-      getControllerFile: function(controllerName)  {return controllerName + '_controller.js';},
+      getControllerFile: (controllerName) => controllerName + '_controller.js',
       viewsPath:  (process.env.NODE_ENV === 'production' ? './app/min_views' : './app/views'),
-      getViewFile: function(controllerName, actionName)  {return controllerName + '/' + actionName + '.jade';},
+      getViewFile: (controllerName, actionName) => controllerName + '/' + actionName + '.jade',
       lib: {},
       routes: {}
     }, options);
@@ -41,8 +41,8 @@ var path = require('path');
     this.cachedHtml = {};
   }
 
-  Dispatcher.prototype.handle=function(req     , res     , next)           {"use strict";
-    res.error500 = function(res, err)  {return this.renderError(500, res, err);}.bind(this);
+  handle(req: any, res: any, next: Function) {
+    res.error500 = (res, err) => this.renderError(500, res, err);
     var httpContext = this.prepareContext(req, res, next);
     var request = httpContext.request;
 
@@ -82,9 +82,9 @@ var path = require('path');
     } else {
       httpContext.error404();
     }
-  };
+  }
 
-  Dispatcher.prototype.searchController=function(httpContext) {"use strict";
+  searchController(httpContext) {
     var request = httpContext.request;
     if (request.controller in this.cachedControllers
       && (request.action in this.cachedControllers[request.controller]
@@ -105,9 +105,9 @@ var path = require('path');
         return null;
       }
     }
-  };
+  }
 
-  Dispatcher.prototype.prepareContext=function(req, res, next) {"use strict";
+  prepareContext(req, res, next) {
     return {
       req: req,
       res: res,
@@ -116,16 +116,16 @@ var path = require('path');
       isXhr: this.isXhr(req.headers),
       request: this.parseRequest(req.url),
       lib: this.options.lib,
-      asJson: function(data)  {
+      asJson: (data) => {
         data.__json = true;
         return data;
       },
-      asText: function(data)  {
+      asText: (data) => {
         var d = {};
         d.__text = data;
         return d;
       },
-      flash: function(message, appearance, to)  {
+      flash: (message, appearance, to) => {
         if (!to) {
           to = appearance;
           appearance = 'error';
@@ -147,21 +147,21 @@ var path = require('path');
             res.end();
           }
         }
-      }.bind(this),
-      error404: function()  {return this.renderError(404, res);}.bind(this),
-      error500: function(err)  {return this.renderError(500, res, err);}.bind(this),
-      customResponse: function(statusCode, err)  {return this.renderError(statusCode, res, err);}.bind(this),
-      persistCache: function(data)  {
+      },
+      error404: () => this.renderError(404, res),
+      error500: err => this.renderError(500, res, err),
+      customResponse: (statusCode, err) => this.renderError(statusCode, res, err),
+      persistCache: data => {
         data.__persist = true;
         return data;
       }
     };
-  };
+  }
 
-  Dispatcher.prototype.render=function(f, httpContext) {"use strict";
+  render (f, httpContext) {
     var app = this;
 
-    var onActionComplete = function(data)  {
+    var onActionComplete = data => {
 
       var flash = app.fetchFlashMessages(httpContext);
 
@@ -214,18 +214,18 @@ var path = require('path');
         onActionComplete(data); // sync version of action
       }
     }
-  };;
+  };
 
-  Dispatcher.prototype.fetchFlashMessages=function(httpContext) {"use strict";
+  fetchFlashMessages(httpContext) {
     if (httpContext.req.session && httpContext.req.session.flash) {
       var flash = httpContext.req.session.flash;
       httpContext.req.session.flash = null;
       return flash;
     }
     return null;
-  };
+  }
 
-  Dispatcher.prototype.parseRequest=function(url, withMissing) {"use strict";
+  parseRequest(url, withMissing) {
     var path = url.split('?')[0];
     if (path in this.routes) {
       path = this.routes[path];
@@ -241,17 +241,17 @@ var path = require('path');
     parsed_request.params = segments.slice(3, segments.length);
 
     return parsed_request;
-  };
+  }
 
 
-  Dispatcher.prototype.returnJson=function(httpContext, data)         {"use strict";
+  returnJson(httpContext, data): string {
     httpContext.res.writeHead(200, {
       'Content-Type': 'application/json'
     });
     return JSON.stringify(data);
-  };
+  }
 
-  Dispatcher.prototype.renderError=function(errorCode, res, err) {"use strict";
+  renderError(errorCode, res, err) {
     if (!res.headersSent) {
       res.writeHeader(errorCode);
       var html = this.compileJade(null,
@@ -262,32 +262,32 @@ var path = require('path');
         });
         res.end(html);
     }
-  };
+  }
 
-  Dispatcher.prototype.extend=function()      {"use strict";
+  extend(): any {
     for(var i=1; i<arguments.length; i++)
       for(var key in arguments[i])
         if(arguments[i].hasOwnProperty(key))
         {arguments[0][key] = arguments[i][key];}
     return arguments[0];
-  };
+  }
 
   /*
   * Compile .jade file into javascript function
   * If caching is enabled it try extract if from cache
   */
-  Dispatcher.prototype.compileJade=function(httpContext, filename) {"use strict";
+  compileJade(httpContext, filename) {
 
     if (this.options.cache && this.cachedViews[filename]) {
       return this.cachedViews[filename];
     }
 
     if (!fs.existsSync(filename)) {
-      return function(data)  {
+      return data => {
         return httpContext !== null ?
         this.returnJson(httpContext, data) :
         JSON.stringify(data);
-      }.bind(this);
+      };
     }
 
     var prevDate = new Date();
@@ -307,9 +307,9 @@ var path = require('path');
     }
 
     return fn;
-  };
+  }
 
-  Dispatcher.prototype.isXhr=function(headers)          {"use strict";
+  isXhr(headers): boolean {
     if ('x-requested-with' in headers) {
       return headers['x-requested-with'].toLowerCase() === 'xmlhttprequest';
     }
@@ -317,13 +317,13 @@ var path = require('path');
       return headers['X-Requested-With'].toLowerCase() === 'xmlhttprequest';
     }
     return false;
-  };
+  }
 
-
+}
 
 module.exports = function(options) {
   var d = new Dispatcher(options);
-  return function(req, res, next)  {return d.handle(req, res, next);};
+  return (req, res, next) => d.handle(req, res, next);
 };
 
 //

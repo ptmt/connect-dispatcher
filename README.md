@@ -2,13 +2,15 @@ connect-dispatcher
 ==================
 [ ![Codeship Status for unknownexception/connect-dispatcher](https://www.codeship.io/projects/11527a50-f90d-0131-a739-5e0e92dbe03c/status)](https://www.codeship.io/projects/28799)
 
+_Disclaimer_. `connect-dispatcher` is outdates. See koajs, rest, react-router or other frameworks. 
+
 Why?
 
-1. Conventions over configurations. No more huge routes tables.
-2. It has to be simple. A controller returns data to a views, explicit or implicit renders the diffirent type of views depends from context.
-You can process a first response on the server-side, then render the same view in the browser.
-2. Caching controllers, views or you can persist in a cache the entire page. Currently cache stored in a memory, but not a big deal move on to Redis.
-4. Small size footprint, just single file dispatcher.js
+1. Conventions over configurations. DRY routes.
+2. It has to be simple. A controller returns data to a views, rendering the different type of views depend on the context.
+You can process the first response on the server-side, then render the same view in the browser.
+2. Caching controllers, views, or the entire html. Cache stored in a memory, but there is no a big deal about moving to Redis.
+4. Small size footprint, just single file src/dispatcher.js written with typed Flow ES6.
 
 For more information see [examples](https://github.com/unknownexception/connect-dispatcher/tree/master/examples) and [tests](https://github.com/unknownexception/connect-dispatcher/tree/master/test).
 
