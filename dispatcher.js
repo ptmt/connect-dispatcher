@@ -109,9 +109,10 @@ var path = require('path');
 
   Dispatcher.prototype.prepareContext=function(req, res, next) {"use strict";
     res.redirect = function(to) {
-      res.statusCode = 302;
-      res.setHeader('Location', to);
-      res.setHeader('Content-Length', '0');
+      res.writeHead(302, {
+        'Location': to,
+        'Content-Length': '0'
+      });
       res.end();
     }
     return {
