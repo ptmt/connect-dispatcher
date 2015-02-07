@@ -145,7 +145,7 @@ var path = require('path');
           to += '?json=1';
         }
         if (req.query.access_token) {
-          res.end(this.returnJson(this, req.session.flash));
+          res.end(this.returnJson({res: res}, req.session.flash));
         } else {
           if (!res.headerSent) {
             res.redirect(to);
