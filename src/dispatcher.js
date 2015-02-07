@@ -109,10 +109,12 @@ class Dispatcher {
 
   prepareContext(req, res, next) {
     res.redirect = function(to) {
-      res.writeHead(302, {
-        'Location': to,
-        'Content-Length': '0'
-      });
+      try {
+        res.writeHead(302, {
+          'Location': to,
+          'Content-Length': '0'
+        });
+      } catch (e) {}
       res.end();
     }
     return {
