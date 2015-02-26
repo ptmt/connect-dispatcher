@@ -109,10 +109,12 @@ var path = require('path');
 
   Dispatcher.prototype.prepareContext=function(req, res, next) {"use strict";
     res.redirect = function(to) {
-      res.writeHead(302, {
-        'Location': to,
-        'Content-Length': '0'
-      });
+      try {
+        res.writeHead(302, {
+          'Location': to,
+          'Content-Length': '0'
+        });
+      } catch (e) {}
       res.end();
     }
     return {
@@ -164,6 +166,8 @@ var path = require('path');
 
   Dispatcher.prototype.render=function(f, httpContext) {"use strict";
     var app = this;
+
+    httpContext.res.setHeader('Content-Type', 'text/html'); // default
 
     var onActionComplete = function(data)  {
 

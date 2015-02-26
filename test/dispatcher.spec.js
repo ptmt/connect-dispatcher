@@ -17,7 +17,9 @@ describe('Dispatcher', function() {
       requestApp()
         .get('/')
         .expect(200)
+        .expect('Content-Type', /html/)
         .end(function(err, res) {
+          console.log(err);
           expect(res.text).have.to.equal('pages_controller#index');
           done(err);
         });
@@ -53,6 +55,7 @@ describe('Dispatcher', function() {
       requestApp()
         .get('/pages/twoway')
         .set('X-Requested-With', 'XMLHttpRequest')
+        .expect('Content-Type', /json/)
         .end(function(err, res) {
 
           var json = JSON.parse(res.text);
@@ -101,6 +104,7 @@ describe('Dispatcher', function() {
       function(done) {
         requestApp()
           .get('/pages/no_view_and_async?json=1')
+          .expect('Content-Type', /json/)
           .end(function(err, res) {
 
             var json = JSON.parse(res.text);

@@ -167,6 +167,8 @@ class Dispatcher {
   render (f, httpContext) {
     var app = this;
 
+    httpContext.res.setHeader('Content-Type', 'text/html'); // default
+
     var onActionComplete = data => {
 
       var flash = app.fetchFlashMessages(httpContext);
