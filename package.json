@@ -1,7 +1,7 @@
 {
   "name": "connect-dispatcher",
   "version": "1.2.0",
-  "description": "Yet another connect middleware for dispatch http requests",
+  "description": "convetions-over-configuration dispatcher middleware in ES6",
   "main": "dispatcher.js",
   "directories": {
     "test": "test"
