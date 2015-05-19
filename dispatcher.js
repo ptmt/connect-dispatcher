@@ -126,7 +126,14 @@ var path = require('path');
       request: this.parseRequest(req.url),
       lib: this.options.lib,
       asJson: function(data)  {
-        data.__json = true;
+        if (typeof data === 'string') {
+          return data;
+          // data = {
+          //   res: data
+          // }
+        } else {
+          data.__json = true;
+        }
         return data;
       },
       asText: function(data)  {
@@ -173,14 +180,19 @@ var path = require('path');
 
       var flash = app.fetchFlashMessages(httpContext);
 
-      data = data || {};
-      data.flash = data.flash || flash;
-      data.isAuth = httpContext.isAuth;
+      if (typeof data !== 'string') {
+        data = data || {};
+        data.flash = data.flash || flash;
+        data.isAuth = httpContext.isAuth;
+      }
+
       var result = (function() {
         if (data.__json
             || (httpContext.req.query && httpContext.req.query.json)
             || httpContext.isXhr) {
-          delete data.__json;
+          if (data.__json) {
+            delete data.__json;
+          }
           if (!httpContext.res.headersSent) {
             return app.returnJson(httpContext, data);
           }

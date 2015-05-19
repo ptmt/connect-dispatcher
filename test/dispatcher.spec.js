@@ -19,7 +19,6 @@ describe('Dispatcher', function() {
         .expect(200)
         .expect('Content-Type', /html/)
         .end(function(err, res) {
-          console.log(err);
           expect(res.text).have.to.equal('pages_controller#index');
           done(err);
         });
@@ -57,7 +56,6 @@ describe('Dispatcher', function() {
         .set('X-Requested-With', 'XMLHttpRequest')
         .expect('Content-Type', /json/)
         .end(function(err, res) {
-
           var json = JSON.parse(res.text);
           expect(json).have.to.equal('pages_controller#twoway');
           done(err);
@@ -149,7 +147,7 @@ describe('Dispatcher', function() {
         requestAppMissingCountroller()
           .get('/unexisting_page')
           .end(function(err, res) {
-            console.log(err);
+            //console.log(err);
             expect(res.statusCode).have.to.equal(200);
             var json = JSON.parse(res.text);
             expect(json).have.to.equal('unexisting_page');
