@@ -197,6 +197,9 @@ var path = require('path');
             return app.returnJson(httpContext, data);
           }
         } else {
+          if (data.__contentType) {
+            httpContext.res.setHeader('Content-Type', data.__contentType);
+          }
           if (data.__text) {
             return data.__text;
           }
@@ -293,8 +296,8 @@ var path = require('path');
   };
 
   /*
-  * Compile .jade file into javascript function
-  * If caching is enabled it try extract if from cache
+  * Compile .jade file into a javascript function
+  * If caching is enabled, then extract it from the cache
   */
   Dispatcher.prototype.compileJade=function(httpContext, filename) {"use strict";
 

@@ -197,6 +197,9 @@ class Dispatcher {
             return app.returnJson(httpContext, data);
           }
         } else {
+          if (data.__contentType) {
+            httpContext.res.setHeader('Content-Type', data.__contentType);
+          }
           if (data.__text) {
             return data.__text;
           }
