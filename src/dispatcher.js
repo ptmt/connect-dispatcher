@@ -293,8 +293,8 @@ class Dispatcher {
   }
 
   /*
-  * Compile .jade file into javascript function
-  * If caching is enabled it try extract if from cache
+  * Compile .jade file into a javascript function
+  * If caching is enabled, then extract it from the cache
   */
   compileJade(httpContext, filename) {
 
